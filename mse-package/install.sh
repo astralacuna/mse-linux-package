@@ -27,8 +27,14 @@ chmod +x ~/.local/bin/magicseteditor
 
 # Install base data files
 mkdir -p ~/.magicseteditor
+mkdir -p ~/.local/share/magicseteditor
+
 cp -r "$SCRIPT_DIR/data/data" ~/.magicseteditor/data
 cp -r "$SCRIPT_DIR/data/resource" ~/.magicseteditor/resource
+
+# Also install resource to XDG-style location used by some builds
+cp -r "$SCRIPT_DIR/data/resource" ~/.local/share/magicseteditor/resource
+
 
 # Pack selection
 echo ""
