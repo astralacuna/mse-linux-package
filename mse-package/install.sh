@@ -8,6 +8,17 @@ if ! command -v git &>/dev/null; then
     exit 1
 fi
 
+# Check for binary and build.sh
+if [ ! -f "$SCRIPT_DIR/bin/magicseteditor" ]; then
+    echo "Binary not found. Running build.sh first..."
+    if [ -f "$SCRIPT_DIR/../build.sh" ]; then
+        bash "$SCRIPT_DIR/../build.sh"
+    else
+        echo "Error: Cannot find build.sh. Please download the tarball from the Releases page instead of cloning the repo directly."
+        exit 1
+    fi
+fi
+
 # Install binary
 echo "Installing Magic Set Editor..."
 mkdir -p ~/.local/bin
