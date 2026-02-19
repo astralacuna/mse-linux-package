@@ -3,5 +3,6 @@ mse-package/data/
 mse-package/fonts/
 *.tar.gz
 *.zip
-Full-Magic-Pack/
 MagicSetEditor2/
+Full-Magic-Pack/
+mse-win/
