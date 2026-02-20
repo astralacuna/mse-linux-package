@@ -8,15 +8,11 @@ if ! command -v git &>/dev/null; then
     exit 1
 fi
 
-# Check for binary and build.sh
+# Check for binary
 if [ ! -f "$SCRIPT_DIR/bin/magicseteditor" ]; then
-    echo "Binary not found. Running build.sh first..."
-    if [ -f "$SCRIPT_DIR/../build.sh" ]; then
-        bash "$SCRIPT_DIR/../build.sh"
-    else
-        echo "Error: Cannot find build.sh. Please download the tarball from the Releases page instead of cloning the repo directly."
-        exit 1
-    fi
+    echo "Error: Binary not found. Please download the latest release tarball from the Releases page,"
+    echo "or run build.sh and re-run install.sh from ~/build/mse/mse-package/."
+    exit 1
 fi
 
 # Install binary
@@ -26,10 +22,11 @@ cp "$SCRIPT_DIR/bin/magicseteditor" ~/.local/bin/
 chmod +x ~/.local/bin/magicseteditor
 
 # Install base data files
+mkdir -p ~/.magicseteditor/data
 mkdir -p ~/.magicseteditor/resource
 mkdir -p ~/.local/share/magicseteditor/resource
 
-cp -r "$SCRIPT_DIR/data/data" ~/.magicseteditor/data
+cp -r "$SCRIPT_DIR/data/data/." ~/.magicseteditor/data/
 cp -r "$SCRIPT_DIR/data/resource/." ~/.magicseteditor/resource/
 cp -r "$SCRIPT_DIR/data/resource/." ~/.local/share/magicseteditor/resource/
 
@@ -91,7 +88,7 @@ cat > ~/.local/share/applications/magicseteditor.desktop << DESKTOP
 [Desktop Entry]
 Type=Application
 Name=Magic Set Editor
-Exec=/home/$USER/.local/bin/magicseteditor
+Exec=magicseteditor
 Icon=utilities-text-editor
 Categories=Graphics;
 DESKTOP

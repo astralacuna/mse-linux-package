@@ -61,6 +61,24 @@ This removes the binary, app launcher entry, and fonts. It will ask before remov
 
 ---
 
+## Runtime Dependencies
+
+The MSE binary dynamically links against several libraries that must be present on your system. Most desktop Linux installs will already have these, but minimal or container-based installs may not.
+
+| Library | Purpose | Fedora | Debian/Ubuntu | Arch | openSUSE |
+|---|---|---|---|---|---|
+| wxGTK 3.x | GUI toolkit | `wxGTK` | `libwxgtk3.2-0` | `wxwidgets-gtk3` | `wxWidgets-3_2` |
+| OpenGL / GLU | Rendering | `mesa-libGL` `mesa-libGLU` | `libgl1` `libglu1-mesa` | `mesa` `glu` | `Mesa-libGL1` `Mesa-libGLU1` |
+| Hunspell | Spell checking | `hunspell` | `libhunspell-1.7-0` | `hunspell` | `libhunspell-1_7-0` |
+| libstdc++ | C++ runtime | pre-installed | pre-installed | pre-installed | pre-installed |
+
+If MSE fails to launch, check for missing libraries with:
+
+    ldd ~/.local/bin/magicseteditor | grep "not found"
+
+> **Note:** The prebuilt binary is currently only compiled against Fedora 43. Because glibc is forwards-compatible but not backwards-compatible, the binary may fail on older distros (Debian 11, Ubuntu 20.04) with a `GLIBC_X.XX not found` error. If you hit this, build from source on your own system using the instructions below. Pre-build binaries for other common distributions will be packaged alongside the install for future releases. 
+
+
 ## Building from Source
 
 To rebuild the package yourself:
@@ -94,7 +112,9 @@ To rebuild the package yourself:
     cd mse-linux-package
     ./build.sh
 
-This will clone the upstream source, build it, download the base data files, and produce a fresh `MagicSetEditor-linux.tar.gz`.
+The script clones the upstream source, builds it, downloads the base data files, and assembles a fresh release package under `~/build/mse/`. The release tarball is at `~/build/mse/MagicSetEditor-linux.tar.gz`.
+
+> **Immutable distros (Bazzite, Silverblue, etc.):** Running `build.sh` requires build dependencies (`wxGTK-devel`, `mesa-libGLU-devel`, etc.) that are not available on the host image of immutable distros. Building from source is not supported on these systems. Use the prebuilt release tarball from the [Releases](../../releases) page instead — the installer itself works fine since all paths are in `~/.local/`.
 
 ---
 
