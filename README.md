@@ -59,7 +59,6 @@ This removes the binary, bundled libraries, app launcher entry, and fonts. It wi
 | `~/.local/share/applications/magicseteditor.desktop` | App launcher entry |
 | `~/.local/share/fonts/` | MTG fonts |
 | `~/.magicseteditor/data/` | MSE game data and templates |
-| `~/.magicseteditor/resource/` | MSE UI resources (fallback) |
 
 ---
 
