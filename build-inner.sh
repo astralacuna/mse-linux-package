@@ -16,7 +16,7 @@ echo "=== Building ==="
 cmake -S "/build/MagicSetEditor2" -B "/build/MagicSetEditor2/build" \
     -DCMAKE_BUILD_TYPE=Release \
     "-DCMAKE_EXE_LINKER_FLAGS=-Wl,--disable-new-dtags,-rpath,\$ORIGIN/../share/magicseteditor/lib"
-cmake --build "/build/MagicSetEditor2/build" -- -j$(nproc)
+cmake --build "$BUILD/MagicSetEditor2/build" --target magicseteditor -- -j$(nproc)
 
 echo "=== Downloading MSE base data files ==="
 wget -q -O "/build/mse-win.zip" https://github.com/twanvl/MagicSetEditor2/releases/download/v2.1.2/magicseteditor-2.1.2-win32.zip
