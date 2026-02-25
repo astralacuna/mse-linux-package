@@ -11,18 +11,24 @@ rm -f ~/.local/share/applications/magicseteditor.desktop
 update-desktop-database ~/.local/share/applications 2>/dev/null || true
 echo "Removed app launcher entry."
 
+# Ask before removing fonts installed by our package
+if [ -d "$SCRIPT_DIR/fonts" ] && [ -d ~/.local/share/fonts ]; then
+    echo ""
+    read -p "Remove fonts installed by Magic Set Editor? [y/N] " confirm_fonts
+    if [[ "$confirm_fonts" =~ ^[Yy]$ ]]; then
+        while IFS= read -r font; do
+            rm -f ~/.local/share/fonts/"$(basename "$font")"
+        done < <(find "$SCRIPT_DIR/fonts" -type f)
+        fc-cache -f ~/.local/share/fonts
+        echo "Removed fonts."
+    else
+        echo "Skipped fonts."
+    fi
+fi
+
 # Remove shared data (resources and bundled libraries)
 rm -rf ~/.local/share/magicseteditor
 echo "Removed shared data and bundled libraries."
-
-# Remove fonts installed by our package
-if [ -d "$SCRIPT_DIR/fonts" ] && [ -d ~/.local/share/fonts ]; then
-    while IFS= read -r font; do
-        rm -f ~/.local/share/fonts/"$(basename "$font")"
-    done < <(find "$SCRIPT_DIR/fonts" -type f)
-    fc-cache -f ~/.local/share/fonts
-    echo "Removed fonts."
-fi
 
 # Ask before removing data
 echo ""

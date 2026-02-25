@@ -23,12 +23,10 @@ chmod +x ~/.local/bin/magicseteditor
 
 # Install base data files
 mkdir -p ~/.magicseteditor/data
-mkdir -p ~/.magicseteditor/resource
 mkdir -p ~/.local/share/magicseteditor/resource
 mkdir -p ~/.local/share/magicseteditor/lib
 
 cp -r "$SCRIPT_DIR/data/data/." ~/.magicseteditor/data/
-cp -r "$SCRIPT_DIR/data/resource/." ~/.magicseteditor/resource/
 cp -r "$SCRIPT_DIR/data/resource/." ~/.local/share/magicseteditor/resource/
 
 # Install bundled runtime libraries
@@ -97,6 +95,17 @@ Categories=Graphics;
 DESKTOP
 update-desktop-database ~/.local/share/applications 2>/dev/null || true
 
+# At the end of install, after all other steps:
+# Install uninstall script and font manifest for later removal
+cp "$SCRIPT_DIR/uninstall.sh" ~/.local/share/magicseteditor/
+chmod +x ~/.local/share/magicseteditor/uninstall.sh
+if [ -d "$SCRIPT_DIR/fonts" ]; then
+    cp -r "$SCRIPT_DIR/fonts/." ~/.local/share/magicseteditor/fonts/
+fi
+
+
 echo ""
-echo "Done! Launch Magic Set Editor from your app menu or by typing 'magicseteditor' in a terminal."
+echo "Done! You can now delete the folder you extracted this package from."
+echo "To uninstall later, run: ~/.local/share/magicseteditor/uninstall.sh"
+echo "Launch Magic Set Editor from your app menu or by typing 'magicseteditor' in a terminal."
 echo "If the terminal command isn't found, run: export PATH=\"\$HOME/.local/bin:\$PATH\""
