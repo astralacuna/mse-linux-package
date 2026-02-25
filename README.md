@@ -1,15 +1,15 @@
 # Magic Set Editor — Linux Package
 
-An unofficial Linux build and installer for [Magic Set Editor 2](https://github.com/haganbmj/MagicSetEditor2), a program for designing custom trading cards.
+An unofficial Linux build and installer for [Magic Set Editor 2](https://github.com/G-e-n-e-v-e-n-s-i-S/MagicSetEditor2), a program for designing custom trading cards.
 
-This package builds MSE from the [haganbmj fork](https://github.com/haganbmj/MagicSetEditor2) and provides a simple install script with optional template pack downloads from [MagicSetEditorPacks](https://github.com/MagicSetEditorPacks).
+This package builds MSE from the [G-e-n-e-v-e-n-s-i-S fork](https://github.com/G-e-n-e-v-e-n-s-i-S/MagicSetEditor2) and provides a simple install script with optional template pack downloads from [MagicSetEditorPacks](https://github.com/MagicSetEditorPacks).
 
 ---
 
 ## Installation
 
 ### Requirements
-- A Linux distro with `git`, `wget`, and `fc-cache` available
+- A Linux distro with `git` and `fc-cache` available
 - An internet connection (for template pack download during install)
 
 ### Steps
@@ -45,7 +45,7 @@ From the extracted `mse-package/` directory:
 
     ./uninstall.sh
 
-This removes the binary, app launcher entry, and fonts. It will ask before removing `~/.magicseteditor` so your saved card sets are not deleted without confirmation.
+This removes the binary, bundled libraries, app launcher entry, and fonts. It will ask before removing `~/.magicseteditor` so your saved card sets are not deleted without confirmation.
 
 ---
 
@@ -54,57 +54,34 @@ This removes the binary, app launcher entry, and fonts. It will ask before remov
 | Path | Contents |
 |---|---|
 | `~/.local/bin/magicseteditor` | MSE executable |
+| `~/.local/share/magicseteditor/lib/` | Bundled runtime libraries |
+| `~/.local/share/magicseteditor/resource/` | MSE UI resources |
 | `~/.local/share/applications/magicseteditor.desktop` | App launcher entry |
 | `~/.local/share/fonts/` | MTG fonts |
 | `~/.magicseteditor/data/` | MSE game data and templates |
-| `~/.magicseteditor/resource/` | MSE UI resources |
+| `~/.magicseteditor/resource/` | MSE UI resources (fallback) |
 
 ---
 
 ## Runtime Dependencies
 
-The MSE binary dynamically links against several libraries that must be present on your system. Most desktop Linux installs will already have these, but minimal or container-based installs may not.
+The MSE binary bundles its most version-sensitive dependencies (wxWidgets, hunspell, GLU) so it should work out of the box on most desktop Linux installs. The one library that cannot safely be bundled is `libGL`, which is driver-specific and must come from your system.
 
 | Library | Purpose | Fedora | Debian/Ubuntu | Arch | openSUSE |
 |---|---|---|---|---|---|
-| wxGTK 3.x | GUI toolkit | `wxGTK` | `libwxgtk3.2-0` | `wxwidgets-gtk3` | `wxWidgets-3_2` |
-| OpenGL / GLU | Rendering | `mesa-libGL` `mesa-libGLU` | `libgl1` `libglu1-mesa` | `mesa` `glu` | `Mesa-libGL1` `Mesa-libGLU1` |
-| Hunspell | Spell checking | `hunspell` | `libhunspell-1.7-0` | `hunspell` | `libhunspell-1_7-0` |
-| libstdc++ | C++ runtime | pre-installed | pre-installed | pre-installed | pre-installed |
+| libGL | Rendering | `mesa-libGL` | `libgl1` | `mesa` | `Mesa-libGL1` |
 
 If MSE fails to launch, check for missing libraries with:
 
     ldd ~/.local/bin/magicseteditor | grep "not found"
 
-> **Note:** The prebuilt binary is currently only compiled against Fedora 43. Because glibc is forwards-compatible but not backwards-compatible, the binary may fail on older distros (Debian 11, Ubuntu 20.04) with a `GLIBC_X.XX not found` error. If you hit this, build from source on your own system using the instructions below. Pre-build binaries for other common distributions will be packaged alongside the install for future releases. 
+> **Note:** The prebuilt binary was compiled on Debian 12 (glibc 2.36). It may fail on older distros such as Debian 11 or Ubuntu 20.04 with a `GLIBC_X.XX not found` error. If you hit this, build from source on your own system using the instructions below.
 
+---
 
 ## Building from Source
 
-To rebuild the package yourself:
-
-### Dependencies
-
-<details><summary>Fedora</summary>
-
-    sudo dnf install gcc-c++ cmake make git wget unzip wxGTK-devel boost-devel hunspell-devel
-
-</details>
-<details><summary>Debian/Ubuntu</summary>
-
-    sudo apt install g++ cmake make git wget unzip libwxgtk3.2-dev libboost-dev libhunspell-dev
-
-</details>
-<details><summary>Arch/Manjaro</summary>
-
-    sudo pacman -S gcc cmake make git wget unzip wxwidgets-gtk3 boost hunspell
-
-</details>
-<details><summary>openSUSE</summary>
-
-    sudo zypper install gcc-c++ cmake make git wget unzip wxWidgets-devel boost-devel hunspell-devel
-
-</details>
+To rebuild the package yourself, you need **Docker** installed. The build runs inside a Debian 12 container — no other build dependencies needed on your host.
 
 ### Build
 
@@ -112,15 +89,48 @@ To rebuild the package yourself:
     cd mse-linux-package
     ./build.sh
 
-The script clones the upstream source, builds it, downloads the base data files, and assembles a fresh release package under `~/build/mse/`. The release tarball is at `~/build/mse/MagicSetEditor-linux.tar.gz`.
+On first run this builds the Docker image (~1.5–2GB), which includes compiling wxWidgets 3.3.1 from source. This takes 10–20 minutes but is cached for all subsequent runs. The assembled package lands in `~/build/mse/mse-package/` and the release tarball at `~/build/mse/MagicSetEditor-linux.tar.gz`.
 
-> **Immutable distros (Bazzite, Silverblue, etc.):** Running `build.sh` requires build dependencies (`wxGTK-devel`, `mesa-libGLU-devel`, etc.) that are not available on the host image of immutable distros. Building from source is not supported on these systems. Use the prebuilt release tarball from the [Releases](../../releases) page instead — the installer itself works fine since all paths are in `~/.local/`.
+### Distro Build Dependencies
+
+Docker is the only host dependency. All other build dependencies are handled inside the container.
+
+<details><summary>Installing Docker on Fedora</summary>
+
+    sudo dnf install docker
+    sudo systemctl enable --now docker
+    sudo usermod -aG docker $USER
+
+</details>
+<details><summary>Installing Docker on Debian/Ubuntu</summary>
+
+    sudo apt install docker.io
+    sudo systemctl enable --now docker
+    sudo usermod -aG docker $USER
+
+</details>
+<details><summary>Installing Docker on Arch/Manjaro</summary>
+
+    sudo pacman -S docker
+    sudo systemctl enable --now docker
+    sudo usermod -aG docker $USER
+
+</details>
+<details><summary>Installing Docker on openSUSE</summary>
+
+    sudo zypper install docker
+    sudo systemctl enable --now docker
+    sudo usermod -aG docker $USER
+
+</details>
+
+> **Immutable distros (Bazzite, Silverblue, etc.):** Docker may not be available or may require layering on immutable distros. Use the prebuilt release tarball from the [Releases](../../releases) page instead — the installer itself works fine since all paths are in `~/.local/`.
 
 ---
 
 ## Licensing
 
-- **Magic Set Editor 2** is licensed under [GPL v2](https://github.com/haganbmj/MagicSetEditor2/blob/master/LICENSE).
+- **Magic Set Editor 2** is licensed under [GPL v2](https://github.com/G-e-n-e-v-e-n-s-i-S/MagicSetEditor2/blob/master/LICENSE).
 - Template packs are provided by [MagicSetEditorPacks](https://github.com/MagicSetEditorPacks) and downloaded directly from their repositories during install.
 - This packaging script is also released under GPL v2.
 

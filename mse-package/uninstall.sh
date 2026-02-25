@@ -11,6 +11,10 @@ rm -f ~/.local/share/applications/magicseteditor.desktop
 update-desktop-database ~/.local/share/applications 2>/dev/null || true
 echo "Removed app launcher entry."
 
+# Remove shared data (resources and bundled libraries)
+rm -rf ~/.local/share/magicseteditor
+echo "Removed shared data and bundled libraries."
+
 # Remove fonts installed by our package
 if [ -d "$SCRIPT_DIR/fonts" ] && [ -d ~/.local/share/fonts ]; then
     while IFS= read -r font; do

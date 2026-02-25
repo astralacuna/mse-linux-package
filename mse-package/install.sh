@@ -25,11 +25,14 @@ chmod +x ~/.local/bin/magicseteditor
 mkdir -p ~/.magicseteditor/data
 mkdir -p ~/.magicseteditor/resource
 mkdir -p ~/.local/share/magicseteditor/resource
+mkdir -p ~/.local/share/magicseteditor/lib
 
 cp -r "$SCRIPT_DIR/data/data/." ~/.magicseteditor/data/
 cp -r "$SCRIPT_DIR/data/resource/." ~/.magicseteditor/resource/
 cp -r "$SCRIPT_DIR/data/resource/." ~/.local/share/magicseteditor/resource/
 
+# Install bundled runtime libraries
+cp -r "$SCRIPT_DIR/lib/." ~/.local/share/magicseteditor/lib/
 
 
 # Pack selection
