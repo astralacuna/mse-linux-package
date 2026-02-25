@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libglu1-mesa-dev \
     libpng-dev \
     libjpeg-dev \
-    libboost-dev \
-    libboost-regex-dev \
-    libbost-json-dev \
+    libboost1.81-dev \
+    libboost-regex1.81-dev \
+    libboost-json1.81-dev \
     libhunspell-dev \
     libicu72 \
     && rm -rf /var/lib/apt/lists/*

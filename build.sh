@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+BUILD="/build"   # must be explicit, not derived from $0 or SCRIPT_DIR
+SRC="/src"
 
 if [ ! -f "$SCRIPT_DIR/build-inner.sh" ]; then
     echo "Error: build-inner.sh not found. Run build.sh from the repo root, not from mse-package/."
@@ -45,10 +47,10 @@ fi
 
 mkdir -p ~/build/mse
 
-echo "=== Running build in $IMAGE_TAG ==="
 docker run --rm \
     -v "$SCRIPT_DIR:/src:ro" \
     -v "$HOME/build/mse:/build" \
     --user $(id -u):$(id -g) \
+    -e HOME=/tmp \
     "$IMAGE_TAG" \
-    /src/build-inner.sh
+    bash /src/build-inner.sh

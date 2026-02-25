@@ -1,5 +1,7 @@
 #!/bin/bash
 set -e
+BUILD="/build"   # must be explicit, not derived from $0 or SCRIPT_DIR
+SRC="/src"
 PKG="/build/mse-package"
 
 # Allow git to operate on the mounted build directory
@@ -13,7 +15,7 @@ else
 fi
 
 echo "=== Building ==="
-cmake -S "/build/MagicSetEditor2" -B "/build/MagicSetEditor2/build" \
+cmake -S "$BUILD/MagicSetEditor2" -B "$BUILD/MagicSetEditor2/build" \
     -DCMAKE_BUILD_TYPE=Release \
     "-DCMAKE_EXE_LINKER_FLAGS=-Wl,--disable-new-dtags,-rpath,\$ORIGIN/../share/magicseteditor/lib"
 cmake --build "$BUILD/MagicSetEditor2/build" --target magicseteditor -- -j$(nproc)
