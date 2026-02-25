@@ -1,4 +1,10 @@
 #!/bin/bash
+
+if [ ! -f "$SCRIPT_DIR/build-inner.sh" ]; then
+    echo "Error: build-inner.sh not found. Run build.sh from the repo root, not from mse-package/."
+    exit 1
+fi
+
 set -e
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 BUILD_DIR="$HOME/build/mse"

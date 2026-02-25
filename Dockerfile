@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg-dev \
     libboost-dev \
     libboost-regex-dev \
+    libbost-json-dev \
     libhunspell-dev \
     libicu72 \
     && rm -rf /var/lib/apt/lists/*
